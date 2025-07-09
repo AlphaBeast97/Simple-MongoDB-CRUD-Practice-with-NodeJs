@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Check if PORT and MONGO_DB_URI are defined
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
 // Set up the products router
