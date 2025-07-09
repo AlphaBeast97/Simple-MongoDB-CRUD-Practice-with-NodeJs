@@ -13,7 +13,7 @@ Below are the API endpoints for performing CRUD operations on the `products` res
 Adds a new product to the database.
 
 - **Method:** `POST`
-- **Endpoint:** `/products`
+- **Endpoint:** `/api/products`
 - **Request Body:**
   ```json
   {
@@ -39,7 +39,7 @@ Adds a new product to the database.
 Retrieves a list of all products.
 
 - **Method:** `GET`
-- **Endpoint:** `/products`
+- **Endpoint:** `/api/products`
 - **Success Response (200 OK):** An array of product objects.
 
 ### 3. Get a Single Product 📄
@@ -47,7 +47,7 @@ Retrieves a list of all products.
 Retrieves a specific product by its unique ID.
 
 - **Method:** `GET`
-- **Endpoint:** `/products/:id`
+- **Endpoint:** `/api/products/:id`
 - **Success Response (200 OK):** A single product object.
 
 ### 4. Update a Product 🔄
@@ -55,7 +55,7 @@ Retrieves a specific product by its unique ID.
 Updates an existing product by its ID. You can use `PUT` for a full update or `PATCH` for a partial update.
 
 - **Method:** `PATCH` or `PUT`
-- **Endpoint:** `/products/:id`
+- **Endpoint:** `/api/products/:id`
 - **Request Body (Example):**
   ```json
   {
@@ -69,7 +69,7 @@ Updates an existing product by its ID. You can use `PUT` for a full update or `P
 Deletes a product from the database by its ID.
 
 - **Method:** `DELETE`
-- **Endpoint:** `/products/:id`
+- **Endpoint:** `/api/products/:id`
 - **Success Response (200 OK):**
   ```json
   {
