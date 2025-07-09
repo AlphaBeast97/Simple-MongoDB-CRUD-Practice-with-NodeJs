@@ -1,0 +1,115 @@
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import { Product } from "./models/product.model.js";
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const PORT = process.env.PORT;
+const DB_PASS = process.env.DATA_BASE_PASSWORD;
+
+if (!DB_PASS) {
+  console.error("Error: DATA_BASE_PASSWORD is not defined in the .env file.");
+  process.exit(1);
+}
+
+// Middleware to handle CORS
+app.get("/", (req, res) => {
+  try {
+    res.send("Welcome to the Product API");
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Product API Endpoints
+// Get all products
+app.get("/api/products", async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.status(200).json(products);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Get product by ID
+app.get("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json(product);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Create a new product
+app.post("/api/products", async (req, res) => {
+  try {
+    const product = await Product.create(req.body);
+    res.status(201).json(product);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Update an existing product
+app.put("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+    const product = await Product.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json(product);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Delete a product
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Connect to MongoDB
+mongoose
+  .connect(
+    `mongodb+srv://CRUD-Admin:${DB_PASS}@cluster0.nxif2q2.mongodb.net/Cluster0?retryWrites=true&w=majority&appName=Cluster0`
+  )
+  .then(() => console.log("Connected to MongoDB!"))
+  .catch((err) => console.error("Failed to connect to MongoDB", err));
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
