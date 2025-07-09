@@ -10,20 +10,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT;
-const URI = process.env.MONGO_DB_URI;
+const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
-if (!DB_PASS) {
-  console.error("Error: DATA_BASE_PASSWORD is not defined in the .env file.");
-  process.exit(1);
-}
-
-// Middleware to handle CORS
+// Welcome route
 app.get("/", (req, res) => {
-  try {
-    res.send("Welcome to the Product API");
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.send("Welcome to the Product API");
 });
 
 // Product API Endpoints
@@ -101,16 +92,24 @@ app.delete("/api/products/:id", async (req, res) => {
   }
 });
 
-// Connect to MongoDB
-mongoose
-  .connect(URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB!"))
-  .catch((err) => console.error("Failed to connect to MongoDB", err));
+const startServer = async () => {
+  if (!MONGO_DB_URI) {
+    console.error("Error: MONGO_DB_URI is not defined in the .env file.");
+    process.exit(1);
+  }
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  try {
+    // Connect to MongoDB - no deprecated options needed
+    await mongoose.connect(MONGO_DB_URI);
+    console.log("Connected to MongoDB!");
+
+    // Start the server only after a successful database connection
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+  }
+};
+
+startServer();
